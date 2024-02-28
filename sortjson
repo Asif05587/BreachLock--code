@@ -1,0 +1,66 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+
+public class SortData {
+
+    public static List<Map<String, String>> sortData(List<Map<String, String>> data, String sortKey) {
+        // Extract sort order from the key
+        boolean ascending = sortKey.charAt(0) != '-';
+        String key = sortKey.substring(1);
+
+        // Use a custom comparator to sort based on the key and order
+        Comparator<Map<String, String>> comparator = new Comparator<Map<String, String>>() {
+            @Override
+            public int compare(Map<String, String> o1, Map<String, String> o2) {
+                String value1 = o1.get(key);
+                String value2 = o2.get(key);
+
+                // Handle null values
+                if (value1 == null && value2 == null) {
+                    return 0; // Both values are null, consider them equal
+                } else if (value1 == null) {
+                    return ascending ? -1 : 1; // Null is considered smaller
+                } else if (value2 == null) {
+                    return ascending ? 1 : -1; // Null is considered smaller
+                }
+
+                // Compare non-null values
+                return ascending ? value1.compareTo(value2) : value2.compareTo(value1);
+            }
+        };
+
+        // Create a copy of the data list to avoid modifying the original
+        List<Map<String, String>> sortedData = new ArrayList<>(data);
+        Collections.sort(sortedData, comparator);
+
+        return sortedData;
+    }
+
+    public static void main(String[] args) {
+        List<Map<String, String>> data = new ArrayList<>();
+        data.add(Map.of("country", "Belgium", "capital", "Brussels"));
+        data.add(Map.of("country", "Netherlands", "capital", "Amsterdam"));
+        data.add(Map.of("country", "Australia", "capital", "Sydney"));
+        data.add(Map.of("country", "Austria", "capital", "Vienna"));
+        data.add(Map.of("country", "Germany", "capital", "Berlin"));
+
+        // Sort by country in ascending order
+        List<Map<String, String>> sortedByCountryAsc = sortData(data, "country");
+        System.out.println("Sorted by country (ascending): " + sortedByCountryAsc);
+
+        // Sort by country in descending order
+        List<Map<String, String>> sortedByCountryDesc = sortData(data, "-country");
+        System.out.println("Sorted by country (descending): " + sortedByCountryDesc);
+
+        // Sort by capital in ascending order
+        List<Map<String, String>> sortedByCapitalAsc = sortData(data, "capital");
+        System.out.println("Sorted by capital (ascending): " + sortedByCapitalAsc);
+
+        // Sort by capital in descending order
+        List<Map<String, String>> sortedByCapitalDesc = sortData(data, "-capital");
+        System.out.println("Sorted by capital (descending): " + sortedByCapitalDesc);
+    }
+}
